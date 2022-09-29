@@ -1284,7 +1284,7 @@ if __name__ == "__main__":
     check_updates()
 
     cpu = cpuinfo.get_cpu_info()
-    accept = Manager().Value("100000", 0)
+    accept = Manager().Value("i", 0)
     reject = Manager().Value("i", 0)
     blocks = Manager().Value("i", 0)
     hashrate = Manager().dict()
