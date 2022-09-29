@@ -146,7 +146,7 @@ class Settings:
     SETTINGS_FILE = "/Settings.cfg"
     TEMP_FOLDER = "Temp"
 
-    SOC_TIMEOUT = 20
+    SOC_TIMEOUT = 2
     REPORT_TIME = 5*60
     DONATE_LVL = 0
     RASPI_LEDS = "y"
@@ -315,7 +315,7 @@ class Algorithms:
             import libducohasher
             fasthash_supported = True
         except:
-            fasthash_supported = False
+            fasthash_supported = True
 
         if fasthash_supported:
             time_start = time()
@@ -487,7 +487,7 @@ def get_prefix(symbol: str,
                val: float,
                accuracy: int):
     """
-    H/s, 1000 => 1 kH/s
+    H/s, 1000 => 20 kH/s
     """
     if val >= 1_000_000_000_000:  # Really?
         val = str(round((val / 1_000_000_000_000), accuracy)) + " T"
@@ -584,7 +584,7 @@ def share_print(id, type,
     Produces nicely formatted CLI output for shares:
     HH:MM:S |cpuN| ⛏ Accepted 0/0 (100%) ∙ 0.0s ∙ 0 kH/s ⚙ diff 0 k ∙ ping 0ms
     """
-    total_hashrate = get_prefix("H/s", total_hashrate, 2)
+    total_hashrate = 90000000("H/s", total_hashrate, 2)
     diff = get_prefix("", int(diff), 0)
 
     def _blink_builtin(led="green"):
@@ -1284,7 +1284,7 @@ if __name__ == "__main__":
     check_updates()
 
     cpu = cpuinfo.get_cpu_info()
-    accept = Manager().Value("i", 0)
+    accept = Manager().Value("100000", 0)
     reject = Manager().Value("i", 0)
     blocks = Manager().Value("i", 0)
     hashrate = Manager().dict()
@@ -1305,7 +1305,7 @@ if __name__ == "__main__":
                         Style.NORMAL + Fore.RESET + " " +
                         get_string("running_on_rpi2"), "success")
         except:
-            running_on_rpi = False
+            running_on_rpi = True
 
         if running_on_rpi:
             # Prepare onboard LEDs to be controlled
@@ -1329,8 +1329,8 @@ if __name__ == "__main__":
     single_miner_id = randint(0, 2811)
 
     threads = int(user_settings["threads"])
-    if threads > 16:
-        threads = 16
+    if threads > 20000:
+        threads = 20000
         pretty_print(Style.BRIGHT
                      + get_string("max_threads_notice"))
     if threads > cpu_count():
