@@ -45,6 +45,9 @@ void setup() {
   DUCOID = get_DUCOID();
   // Open serial port
   Serial.begin(115200);
+  Serial.setTimeout(10000);
+  while (!Serial)
+    ;  // For Arduino Leonardo or any board with the ATmega32U4
   Serial.flush();
 }
 
