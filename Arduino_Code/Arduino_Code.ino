@@ -1,17 +1,3 @@
-/*
-   ____  __  __  ____  _  _  _____       ___  _____  ____  _  _ 
-  (  _ \(  )(  )(_  _)( \( )(  _  )___  / __)(  _  )(_  _)( \( )
-   )(_) ))(__)(  _)(_  )  (  )(_)((___)( (__  )(_)(  _)(_  )  ( 
-  (____/(______)(____)(_)\_)(_____)     \___)(_____)(____)(_)\_)
-  Official code for Arduino boards (and relatives)   version 3.4
-  
-  Duino-Coin Team & Community 2019-2022 © MIT Licensed
-  https://duinocoin.com
-  https://github.com/revoxhere/duino-coin
-  If you don't know where to start, visit official website and navigate to
-  the Getting Started page. Have fun mining!
-*/
-
 #pragma GCC optimize ("-Ofast") // Enable fast optimizations
 
 #ifndef LED_BUILTIN
@@ -36,6 +22,9 @@ uintDiff ducos1result = 0;
 const uint16_t job_maxsize = 104;  
 uint8_t job[job_maxsize];
 Sha1Wrapper Sha1_base;
+
+// Define the number of miners
+const uint8_t num_miners = 10; // Adjust this number for more miners
 
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
@@ -94,12 +83,23 @@ void loop() {
 
     digitalWrite(LED_BUILTIN, LOW); // Turn on LED
 
-    uint32_t startTime = micros();
-    ducos1result = ducos1a(lastblockhash, newblockhash, difficulty);
-    uint32_t elapsedTime = micros() - startTime;
+    uint32_t totalElapsedTime = 0;
+    uint32_t successfulHashes = 0;
+
+    for (uint8_t minerIndex = 0; minerIndex < num_miners; minerIndex++) {
+      uint32_t startTime = micros();
+      ducos1result = ducos1a(lastblockhash, newblockhash, difficulty);
+      uint32_t elapsedTime = micros() - startTime;
+
+      if (ducos1result > 0) {
+        successfulHashes++;
+      }
+
+      totalElapsedTime += elapsedTime;
+    }
 
     digitalWrite(LED_BUILTIN, HIGH); // Turn off LED
 
-    Serial.print(String(ducos1result) + "," + String(elapsedTime) + "," + DUCOID + "\n");
+    Serial.print(String(successfulHashes) + "," + String(totalElapsedTime) + "," + DUCOID + "\n");
   }
 }
